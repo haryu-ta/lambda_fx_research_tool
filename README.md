@@ -44,3 +44,18 @@ uvx --from git+https://github.com/github/spec-kit.git specify init lambda_fx_res
 # Copilot　Chatにて実行すること
 /speckit.plan --file ./docs/plan.md
 ```
+
+### 作成物
+
+- data-model.md
+  - データモデル定義
+  - システム内で飛び交うデータの「形（スキーマ）」を厳密に定義したファイルです。
+- plan.md
+  - 技術計画書
+  - 全体のアーキテクチャや、ソースコードをどう分割するか（ディレクトリ構造）をまとめたファイルです。
+- quickstart.md
+  - 開発・起動ガイド
+  - このプロジェクトをローカル環境でどうやってセットアップし、どうやってテストやデプロイを実行すればいいかの「手順書」です。
+- research.md
+  - 技術調査・検証ログ
+  - AIが設計を決めるにあたって、「本当にこの方法で実現可能か？」を裏付け調査した内容の記録です。

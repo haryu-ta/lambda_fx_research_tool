@@ -12,6 +12,19 @@ from src.models import ExchangeRateSnapshot
 
 class ExchangeRateError(Exception):
     """Raised when exchange rate fetch fails."""
+
+    pass
+
+
+class ExchangeRateApiError(ExchangeRateError):
+    """Raised when exchange rate provider API call fails."""
+
+    pass
+
+
+class ExchangeRateDataError(ExchangeRateError):
+    """Raised when exchange rate provider data is invalid."""
+
     pass
 
 
@@ -49,14 +62,14 @@ class ExchangeRateService:
             # Validate response structure
             if data.get("result") != "success":
                 error_type = data.get("error-type", "unknown")
-                raise ExchangeRateError(f"API error: {error_type}")
+                raise ExchangeRateApiError(f"API error: {error_type}")
 
             # Extract JPY rate
             rates = data.get("conversion_rates", {})
             jpy_rate = rates.get("JPY")
 
             if jpy_rate is None:
-                raise ExchangeRateError("JPY rate not found in API response")
+                raise ExchangeRateDataError("JPY rate not found in API response")
 
             # Create and validate snapshot
             snapshot = ExchangeRateSnapshot(
@@ -72,19 +85,19 @@ class ExchangeRateService:
         except requests.RequestException as e:
             # Handle HTTP errors, timeouts, etc.
             if isinstance(e, requests.Timeout):
-                raise ExchangeRateError(f"API request timeout: {str(e)}")
+                raise ExchangeRateApiError(f"API request timeout: {str(e)}")
             elif isinstance(e, requests.ConnectionError):
-                raise ExchangeRateError(f"API connection error: {str(e)}")
+                raise ExchangeRateApiError(f"API connection error: {str(e)}")
             else:
-                raise ExchangeRateError(f"API request failed: {str(e)}")
+                raise ExchangeRateApiError(f"API request failed: {str(e)}")
 
         except (ValueError, KeyError) as e:
             # Handle JSON parsing errors
-            raise ExchangeRateError(f"Invalid API response format: {str(e)}")
+            raise ExchangeRateDataError(f"Invalid API response format: {str(e)}")
 
         except ValidationError as e:
             # Handle Pydantic validation errors
-            raise ExchangeRateError(f"Invalid exchange rate data: {str(e)}")
+            raise ExchangeRateDataError(f"Invalid exchange rate data: {str(e)}")
 
 
 def create_exchange_service(config: Config) -> ExchangeRateService:

@@ -27,6 +27,16 @@ def mock_env(monkeypatch):
     yield env_vars
 
 
+@pytest.fixture(autouse=True)
+def reset_config_singleton():
+    """Reset singleton config between tests to avoid cross-test contamination."""
+    import src.config
+
+    src.config._config = None
+    yield
+    src.config._config = None
+
+
 @pytest.fixture
 def mock_lambda_context():
     """Create a mock Lambda context.
@@ -80,9 +90,7 @@ def mock_line_push_success_response():
     Returns:
         Dictionary representing successful push response
     """
-    return {
-        "message": "message sent"
-    }
+    return {"message": "message sent"}
 
 
 @pytest.fixture
@@ -96,6 +104,22 @@ def mock_requests_post(mocker):
         Mocked requests.post callable
     """
     mock = mocker.patch("requests.post")
+    mock.return_value.status_code = 200
+    mock.return_value.json.return_value = {"result": "success"}
+    return mock
+
+
+@pytest.fixture
+def mock_requests_get(mocker):
+    """Mock requests.get for external API calls.
+
+    Args:
+        mocker: pytest-mock fixture
+
+    Returns:
+        Mocked requests.get callable
+    """
+    mock = mocker.patch("requests.get")
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = {"result": "success"}
     return mock

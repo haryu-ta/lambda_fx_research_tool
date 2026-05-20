@@ -1,21 +1,22 @@
 """Integration test for Lambda success path."""
 
-from datetime import datetime, timezone, timedelta
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from src.lambda_function import lambda_handler
 
 
-def test_lambda_success_path(mock_env, mock_lambda_context, mock_requests_post, mock_exchange_rate_response):
+def test_lambda_success_path(
+    mock_env,
+    mock_lambda_context,
+    mock_requests_get,
+    mock_requests_post,
+    mock_exchange_rate_response,
+):
     """Test successful Lambda execution end-to-end."""
-    # Mock both exchange rate and LINE APIs
-    mock_responses = [
-        MagicMock(status_code=200, json=lambda: mock_exchange_rate_response),  # Exchange rate API
-        MagicMock(status_code=200, json=lambda: {"message": "sent"}),  # LINE API
-    ]
-    mock_requests_post.side_effect = mock_responses
+    mock_requests_get.return_value = MagicMock(
+        status_code=200, json=lambda: mock_exchange_rate_response
+    )
+    mock_requests_post.return_value = MagicMock(status_code=200, json=lambda: {"message": "sent"})
 
     # Execute Lambda
     event = {}
@@ -25,16 +26,18 @@ def test_lambda_success_path(mock_env, mock_lambda_context, mock_requests_post, 
     assert result["statusCode"] == 200
     assert "successfully" in result["body"].lower()
 
-    # Verify both APIs were called
-    assert mock_requests_post.call_count == 2
+    assert mock_requests_get.call_count == 1
+    assert mock_requests_post.call_count == 1
 
 
-def test_lambda_exchange_rate_api_failure(mock_env, mock_lambda_context, mock_requests_post):
+def test_lambda_exchange_rate_api_failure(
+    mock_env, mock_lambda_context, mock_requests_get, mock_requests_post
+):
     """Test Lambda execution when exchange rate API fails."""
-    # First call fails (exchange rate), second succeeds (error notification)
-    failure_response = MagicMock(status_code=200, json=lambda: {"result": "error", "error-type": "invalid-key"})
-    success_response = MagicMock(status_code=200, json=lambda: {"message": "sent"})
-    mock_requests_post.side_effect = [failure_response, success_response]
+    mock_requests_get.return_value = MagicMock(
+        status_code=200, json=lambda: {"result": "error", "error-type": "invalid-key"}
+    )
+    mock_requests_post.return_value = MagicMock(status_code=200, json=lambda: {"message": "sent"})
 
     event = {}
     result = lambda_handler(event, mock_lambda_context)
@@ -43,11 +46,11 @@ def test_lambda_exchange_rate_api_failure(mock_env, mock_lambda_context, mock_re
     assert result["statusCode"] == 500
     assert "exchange rate fetch failed" in result["body"].lower()
 
-    # Verify error notification was sent
-    assert mock_requests_post.call_count == 2
+    assert mock_requests_get.call_count == 1
+    assert mock_requests_post.call_count == 1
 
 
-def test_lambda_missing_config(mock_lambda_context, mock_requests_post, monkeypatch):
+def test_lambda_missing_config(mock_lambda_context, monkeypatch):
     """Test Lambda execution with missing configuration."""
     # Remove all required env vars
     monkeypatch.delenv("EXCHANGE_RATE_API_KEY", raising=False)
@@ -56,6 +59,7 @@ def test_lambda_missing_config(mock_lambda_context, mock_requests_post, monkeypa
 
     # Reset the config singleton
     import src.config
+
     src.config._config = None
 
     event = {}
@@ -66,9 +70,10 @@ def test_lambda_missing_config(mock_lambda_context, mock_requests_post, monkeypa
     assert "configuration error" in result["body"].lower()
 
 
-def test_lambda_invalid_rate_value(mock_env, mock_lambda_context, mock_requests_post):
+def test_lambda_invalid_rate_value(
+    mock_env, mock_lambda_context, mock_requests_get, mock_requests_post
+):
     """Test Lambda execution with invalid exchange rate value."""
-    # Mock API response with zero/negative rate
     invalid_response = MagicMock(
         status_code=200,
         json=lambda: {
@@ -78,8 +83,8 @@ def test_lambda_invalid_rate_value(mock_env, mock_lambda_context, mock_requests_
             "time_last_update_utc": "2026-05-17T12:00:00Z",
         },
     )
-    success_response = MagicMock(status_code=200, json=lambda: {"message": "sent"})
-    mock_requests_post.side_effect = [invalid_response, success_response]
+    mock_requests_get.return_value = invalid_response
+    mock_requests_post.return_value = MagicMock(status_code=200, json=lambda: {"message": "sent"})
 
     event = {}
     result = lambda_handler(event, mock_lambda_context)
@@ -88,16 +93,22 @@ def test_lambda_invalid_rate_value(mock_env, mock_lambda_context, mock_requests_
     assert result["statusCode"] == 400
     assert "exchange rate" in result["body"].lower()
 
-    # Verify error notification was sent
-    assert mock_requests_post.call_count == 2
+    assert mock_requests_get.call_count == 1
+    assert mock_requests_post.call_count == 1
 
 
-def test_lambda_line_api_failure(mock_env, mock_lambda_context, mock_requests_post, mock_exchange_rate_response):
+def test_lambda_line_api_failure(
+    mock_env,
+    mock_lambda_context,
+    mock_requests_get,
+    mock_requests_post,
+    mock_exchange_rate_response,
+):
     """Test Lambda execution when LINE API fails."""
-    # First call succeeds (exchange rate), second fails (LINE push)
-    success_response = MagicMock(status_code=200, json=lambda: mock_exchange_rate_response)
-    failure_response = MagicMock(status_code=401, text="Unauthorized")
-    mock_requests_post.side_effect = [success_response, failure_response]
+    mock_requests_get.return_value = MagicMock(
+        status_code=200, json=lambda: mock_exchange_rate_response
+    )
+    mock_requests_post.return_value = MagicMock(status_code=401, text="Unauthorized")
 
     event = {}
     result = lambda_handler(event, mock_lambda_context)

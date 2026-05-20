@@ -68,3 +68,16 @@ def test_get_config_singleton(mock_env):
     config2 = get_config()
 
     assert config1 is config2
+
+
+def test_validate_schedule_timezone_success():
+    """Schedule timezone must allow Asia/Tokyo."""
+    assert Config.validate_schedule_timezone("Asia/Tokyo") == "Asia/Tokyo"
+
+
+def test_validate_schedule_timezone_failure():
+    """Schedule timezone must reject non-JST values."""
+    with pytest.raises(ConfigError) as exc_info:
+        Config.validate_schedule_timezone("UTC")
+
+    assert "Asia/Tokyo" in str(exc_info.value)

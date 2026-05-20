@@ -26,10 +26,10 @@ description: "Implementation task list for FX Rate LINE Notification"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project structure per implementation plan (src/, tests/unit, tests/integration directories)
-- [ ] T002 Initialize Python 3.13 project with dependencies: requests, pydantic>=2.0, aws-lambda-powertools, pytest, pytest-mock
-- [ ] T003 [P] Configure linting (ruff) and formatting (black) tools with pyproject.toml
-- [ ] T004 [P] Create .env.example template with EXCHANGE_RATE_API_KEY, LINE_CHANNEL_ACCESS_TOKEN, LINE_TO_USER_ID placeholders
+- [x] T001 Create project structure per implementation plan (src/, tests/unit, tests/integration directories)
+- [x] T002 Initialize Python 3.13 project with dependencies: requests, pydantic>=2.0, aws-lambda-powertools, pytest, pytest-mock
+- [x] T003 [P] Configure linting (ruff) and formatting (black) tools with pyproject.toml
+- [x] T004 [P] Create .env.example template with EXCHANGE_RATE_API_KEY, LINE_CHANNEL_ACCESS_TOKEN, LINE_TO_USER_ID placeholders
 
 ---
 
@@ -39,11 +39,11 @@ description: "Implementation task list for FX Rate LINE Notification"
 
 ⚠️ **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Implement src/config.py with environment variable validation (raise error on missing/empty keys)
-- [ ] T006 [P] Define pydantic models in src/models.py: ScheduleConfiguration, ExchangeRateSnapshot, NotificationMessage, ExecutionLogRecord
-- [ ] T007 [P] Configure aws-lambda-powertools Logger in src/logger.py with JSON structured logging and execution_id tracking
-- [ ] T008 Setup test infrastructure: tests/__init__.py, conftest.py with pytest fixtures and mock utilities
-- [ ] T009 Create src/lambda_function.py entry point skeleton with lambda_handler(event, context) signature
+- [x] T005 Implement src/config.py with environment variable validation (raise error on missing/empty keys)
+- [x] T006 [P] Define pydantic models in src/models.py: ScheduleConfiguration, ExchangeRateSnapshot, NotificationMessage, ExecutionLogRecord
+- [x] T007 [P] Configure aws-lambda-powertools Logger in src/logger.py with JSON structured logging and execution_id tracking
+- [x] T008 Setup test infrastructure: tests/__init__.py, conftest.py with pytest fixtures and mock utilities
+- [x] T009 Create src/lambda_function.py entry point skeleton with lambda_handler(event, context) signature
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -62,15 +62,15 @@ description: "Implementation task list for FX Rate LINE Notification"
 
 ### Implementation Tasks
 
-- [ ] T010 [US1] Implement src/exchange_service.py: ExchangeRateSnapshot model validation and error handling
-- [ ] T011 [US1] Implement ExchangeRate-API client in src/exchange_service.py: fetch_rate() function with HTTP error handling
-- [ ] T012 [US1] Implement src/line_service.py: NotificationMessage model and format_success_message(rate, timestamp) function
-- [ ] T013 [US1] Implement LINE Messaging API client in src/line_service.py: send_push_message(message_text, user_id) function
-- [ ] T014 [US1] Implement success path in src/lambda_function.py: fetch rate → format message → send to LINE → log SUCCESS
-- [ ] T015 [US1] [P] Create tests/unit/test_exchange_service.py: Unit tests for rate fetching and ExchangeRateSnapshot validation
-- [ ] T016 [US1] [P] Create tests/unit/test_line_service.py: Unit tests for message formatting and LINE API calls (mocked)
-- [ ] T017 [US1] [P] Create tests/unit/test_config.py: Unit tests for environment variable validation
-- [ ] T018 [US1] Create tests/integration/test_lambda_success_path.py: Integration test with mocked external APIs
+- [x] T010 [US1] Implement src/exchange_service.py: ExchangeRateSnapshot model validation and error handling
+- [x] T011 [US1] Implement ExchangeRate-API client in src/exchange_service.py: fetch_rate() function with HTTP error handling
+- [x] T012 [US1] Implement src/line_service.py: NotificationMessage model and format_success_message(rate, timestamp) function
+- [x] T013 [US1] Implement LINE Messaging API client in src/line_service.py: send_push_message(message_text, user_id) function
+- [x] T014 [US1] Implement success path in src/lambda_function.py: fetch rate → format message → send to LINE → log SUCCESS
+- [x] T015 [US1] [P] Create tests/unit/test_exchange_service.py: Unit tests for rate fetching and ExchangeRateSnapshot validation
+- [x] T016 [US1] [P] Create tests/unit/test_line_service.py: Unit tests for message formatting and LINE API calls (mocked)
+- [x] T017 [US1] [P] Create tests/unit/test_config.py: Unit tests for environment variable validation
+- [x] T018 [US1] Create tests/integration/test_lambda_success_path.py: Integration test with mocked external APIs
 
 ---
 
@@ -88,17 +88,17 @@ description: "Implementation task list for FX Rate LINE Notification"
 
 ### Implementation Tasks
 
-- [ ] T019 [US2] [P] Implement error handling in src/exchange_service.py: catch API errors, throttling, invalid response data
-- [ ] T019B [US2] [P] Implement format_fx_api_error_message(timestamp) in src/line_service.py: `HH:MM時点  為替API　実行NG`
-- [ ] T020 [US2] [P] Implement format_fx_data_unavailable_message(timestamp) in src/line_service.py: `HH:MM時点  為替情報取得できず`
-- [ ] T021 [US2] [P] Implement format_fx_info_error_message(timestamp) in src/line_service.py: `HH:MM時点  為替情報取得NG`
-- [ ] T022 [US2] [P] Add error handling in src/config.py: validate credentials exist and are non-empty; raise with clear error messages
-- [ ] T023 [US2] Implement error paths in src/lambda_function.py: catch exceptions → send appropriate error message → log ERROR → fail execution
-- [ ] T024 [US2] [P] Create tests/unit/test_error_messages.py: Unit tests for all error message formats
-- [ ] T025 [US2] [P] Create tests/integration/test_lambda_fx_api_failure.py: Integration test for FX API error path (mocked failure)
-- [ ] T026 [US2] [P] Create tests/integration/test_lambda_fx_data_invalid.py: Integration test for invalid rate data path
-- [ ] T027 [US2] [P] Create tests/integration/test_lambda_line_failure.py: Integration test for LINE Push failure path
-- [ ] T028 [US2] Create tests/integration/test_lambda_credentials_missing.py: Integration test for missing credentials path
+- [x] T019 [US2] [P] Implement error handling in src/exchange_service.py: catch API errors, throttling, invalid response data
+- [x] T019B [US2] [P] Implement format_fx_api_error_message(timestamp) in src/line_service.py: `HH:MM時点  為替API　実行NG`
+- [x] T020 [US2] [P] Implement format_fx_data_unavailable_message(timestamp) in src/line_service.py: `HH:MM時点  為替情報取得できず`
+- [x] T021 [US2] [P] Implement format_fx_info_error_message(timestamp) in src/line_service.py: `HH:MM時点  為替情報取得NG`
+- [x] T022 [US2] [P] Add error handling in src/config.py: validate credentials exist and are non-empty; raise with clear error messages
+- [x] T023 [US2] Implement error paths in src/lambda_function.py: catch exceptions → send appropriate error message → log ERROR → fail execution
+- [x] T024 [US2] [P] Create tests/unit/test_error_messages.py: Unit tests for all error message formats
+- [x] T025 [US2] [P] Create tests/integration/test_lambda_fx_api_failure.py: Integration test for FX API error path (mocked failure)
+- [x] T026 [US2] [P] Create tests/integration/test_lambda_fx_data_invalid.py: Integration test for invalid rate data path
+- [x] T027 [US2] [P] Create tests/integration/test_lambda_line_failure.py: Integration test for LINE Push failure path
+- [x] T028 [US2] Create tests/integration/test_lambda_credentials_missing.py: Integration test for missing credentials path
 
 ---
 
@@ -113,9 +113,9 @@ description: "Implementation task list for FX Rate LINE Notification"
 
 ### Implementation Tasks
 
-- [ ] T029 [US3] Create AWS EventBridge scheduler configuration template (cron + JST timezone) in docs/eventbridge-setup.md
-- [ ] T030 [US3] Add validation of JST timezone in src/config.py: enforce `Asia/Tokyo` for schedule context
-- [ ] T031 [US3] [P] Create tests/integration/test_lambda_timezone_jst.py: Integration test verifying JST timestamp in log records
+- [x] T029 [US3] Create AWS EventBridge scheduler configuration template (cron + JST timezone) in docs/eventbridge-setup.md
+- [x] T030 [US3] Add validation of JST timezone in src/config.py: enforce `Asia/Tokyo` for schedule context
+- [x] T031 [US3] [P] Create tests/integration/test_lambda_timezone_jst.py: Integration test verifying JST timestamp in log records
 
 ---
 
@@ -125,21 +125,21 @@ description: "Implementation task list for FX Rate LINE Notification"
 
 ### Observability & Logging
 
-- [ ] T032 [P] Verify all INFO/ERROR logs include execution_id, timestamp, event_type, details per ExecutionLogRecord schema
-- [ ] T033 [P] Add CloudWatch Log Insights query examples in docs/cloudwatch-queries.md for troubleshooting
+- [x] T032 [P] Verify all INFO/ERROR logs include execution_id, timestamp, event_type, details per ExecutionLogRecord schema
+- [x] T033 [P] Add CloudWatch Log Insights query examples in docs/cloudwatch-queries.md for troubleshooting
 
 ### Deployment & Operations
 
-- [ ] T034 Create src/requirements.txt with pinned dependency versions
-- [ ] T035 Create deployment instructions in docs/deploy.md: packaging, Lambda layer setup, environment variables
-- [ ] T036 [P] Create operational runbook in docs/runbook.md: manual trigger, failure response, monitoring checklist
-- [ ] T037 [P] Verify retry policy: set EventBridge target Lambda retry = 0 (prevent duplicate notifications)
+- [x] T034 Create src/requirements.txt with pinned dependency versions
+- [x] T035 Create deployment instructions in docs/deploy.md: packaging, Lambda layer setup, environment variables
+- [x] T036 [P] Create operational runbook in docs/runbook.md: manual trigger, failure response, monitoring checklist
+- [x] T037 [P] Verify retry policy: set EventBridge target Lambda retry = 0 (prevent duplicate notifications)
 
 ### Final Validation
 
-- [ ] T038 Run full integration test suite: all 4 failure paths + success path pass
-- [ ] T039 Validate message formats against contract: all message texts match exactly per contracts/notification-contract.md
-- [ ] T040 Code review: check all secrets are environment variable sourced, no hardcoded keys
+- [x] T038 Run full integration test suite: all 4 failure paths + success path pass
+- [x] T039 Validate message formats against contract: all message texts match exactly per contracts/notification-contract.md
+- [x] T040 Code review: check all secrets are environment variable sourced, no hardcoded keys
 - [ ] T041 Commit all source code and documentation, create release tag
 
 ---

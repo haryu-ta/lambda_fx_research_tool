@@ -1,16 +1,19 @@
 """Structured logging configuration using AWS Lambda Powertools."""
 
-import json
-import logging
+from datetime import datetime, timezone
 import uuid
 from typing import Any, Dict, Optional
 
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
-
 # Global logger instance
 _logger: Optional[Logger] = None
+
+
+def _now_iso() -> str:
+    """Return current UTC timestamp in ISO 8601 format."""
+    return datetime.now(timezone.utc).isoformat()
 
 
 def get_logger() -> Logger:
@@ -68,6 +71,9 @@ def log_execution_start(
             "execution_id": execution_id,
             "request_id": context.request_id if context else "N/A",
             "function_name": context.function_name if context else "N/A",
+            "event_type": "execution_start",
+            "timestamp": _now_iso(),
+            "details": {"event": event},
         },
     )
 
@@ -93,6 +99,7 @@ def log_rate_fetch_success(
             "rate": rate,
             "timestamp": timestamp,
             "event_type": "rate_fetch",
+            "details": {"result": "success"},
         },
     )
 
@@ -116,6 +123,7 @@ def log_rate_fetch_failure(
         extra={
             "execution_id": execution_id,
             "reason": error_reason,
+            "timestamp": _now_iso(),
             "event_type": "rate_fetch",
             "details": error_details or {},
         },
@@ -143,6 +151,7 @@ def log_line_push_success(
             "message_preview": message_text[:50],  # First 50 chars
             "timestamp": timestamp,
             "event_type": "line_push",
+            "details": {"result": "success"},
         },
     )
 
@@ -166,6 +175,7 @@ def log_line_push_failure(
         extra={
             "execution_id": execution_id,
             "reason": error_reason,
+            "timestamp": _now_iso(),
             "event_type": "line_push",
             "details": error_details or {},
         },
@@ -191,6 +201,7 @@ def log_validation_error(
         extra={
             "execution_id": execution_id,
             "reason": error_reason,
+            "timestamp": _now_iso(),
             "event_type": "validation_error",
             "details": error_details or {},
         },
@@ -216,6 +227,7 @@ def log_config_error(
         extra={
             "execution_id": execution_id,
             "reason": error_reason,
+            "timestamp": _now_iso(),
             "event_type": "config_error",
             "details": error_details or {},
         },

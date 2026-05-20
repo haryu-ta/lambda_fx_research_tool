@@ -6,7 +6,12 @@ from typing import Any, Dict
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from src.config import ConfigError, get_config
-from src.exchange_service import ExchangeRateError, create_exchange_service
+from src.exchange_service import (
+    ExchangeRateApiError,
+    ExchangeRateDataError,
+    ExchangeRateError,
+    create_exchange_service,
+)
 from src.line_service import LineServiceError, create_line_service
 from src.logger import (
     create_execution_id,
@@ -87,7 +92,21 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
                     "body": "Invalid exchange rate",
                 }
 
-        except ExchangeRateError as e:
+        except ExchangeRateDataError as e:
+            log_validation_error(logger, execution_id, str(e))
+            try:
+                line_service = create_line_service(config)
+                error_msg = line_service.format_fx_data_unavailable_message(display_time)
+                error_msg.to_user_id = config.line_to_user_id
+                line_service.send_push_message(error_msg)
+            except LineServiceError as le:
+                log_line_push_failure(logger, execution_id, str(le), {"original_error": str(e)})
+            return {
+                "statusCode": 400,
+                "body": f"Invalid exchange rate data: {str(e)}",
+            }
+
+        except ExchangeRateApiError as e:
             log_rate_fetch_failure(logger, execution_id, str(e))
             # Send error notification: FX API error
             try:
@@ -96,9 +115,14 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
                 error_msg.to_user_id = config.line_to_user_id
                 line_service.send_push_message(error_msg)
             except LineServiceError as le:
-                log_line_push_failure(
-                    logger, execution_id, str(le), {"original_error": str(e)}
-                )
+                log_line_push_failure(logger, execution_id, str(le), {"original_error": str(e)})
+            return {
+                "statusCode": 500,
+                "body": f"Exchange rate fetch failed: {str(e)}",
+            }
+
+        except ExchangeRateError as e:
+            log_rate_fetch_failure(logger, execution_id, str(e))
             return {
                 "statusCode": 500,
                 "body": f"Exchange rate fetch failed: {str(e)}",
@@ -114,9 +138,7 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
         # 3. Format and send success notification
         try:
             line_service = create_line_service(config)
-            success_msg = line_service.format_success_message(
-                rate_snapshot.rate, display_time
-            )
+            success_msg = line_service.format_success_message(rate_snapshot.rate, display_time)
             success_msg.to_user_id = config.line_to_user_id
             line_service.send_push_message(success_msg)
 

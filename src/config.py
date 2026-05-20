@@ -6,6 +6,7 @@ from typing import Optional
 
 class ConfigError(Exception):
     """Raised when required configuration is missing or invalid."""
+
     pass
 
 
@@ -52,6 +53,23 @@ class Config:
             The environment variable value or default
         """
         return os.getenv(name, default)
+
+    @staticmethod
+    def validate_schedule_timezone(timezone_name: str) -> str:
+        """Validate schedule timezone.
+
+        Args:
+            timezone_name: Timezone name to validate
+
+        Returns:
+            The validated timezone name
+
+        Raises:
+            ConfigError: If timezone is not Asia/Tokyo
+        """
+        if timezone_name != "Asia/Tokyo":
+            raise ConfigError("Schedule timezone must be 'Asia/Tokyo'.")
+        return timezone_name
 
 
 # Singleton instance

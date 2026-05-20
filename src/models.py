@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, validator
 
 class NotificationMessageType(str, Enum):
     """Enumeration of notification message types."""
+
     SUCCESS = "success"
     FX_API_NG = "fx_api_ng"
     FX_DATA_UNAVAILABLE = "fx_data_unavailable"
@@ -17,12 +18,14 @@ class NotificationMessageType(str, Enum):
 
 class ExecutionLogLevel(str, Enum):
     """Enumeration of log levels."""
+
     INFO = "INFO"
     ERROR = "ERROR"
 
 
 class ScheduleConfiguration(BaseModel):
     """Scheduled execution configuration model."""
+
     cron_expression: str = Field(..., description="EventBridge cron expression")
     timezone: str = Field(default="Asia/Tokyo", description="Timezone for schedule")
     retry_enabled: bool = Field(default=False, description="Auto-retry enabled flag")
@@ -64,6 +67,7 @@ class ScheduleConfiguration(BaseModel):
 
 class ExchangeRateSnapshot(BaseModel):
     """Normalized exchange rate API response model."""
+
     base_currency: str = Field(default="USD", description="Source currency")
     target_currency: str = Field(default="JPY", description="Target currency")
     rate: float = Field(..., description="Exchange rate (USD to JPY)")
@@ -90,6 +94,7 @@ class ExchangeRateSnapshot(BaseModel):
 
 class NotificationMessage(BaseModel):
     """LINE notification message model."""
+
     message_type: NotificationMessageType = Field(..., description="Type of message")
     text: str = Field(..., description="Message text to send via LINE")
     display_time_hhmm: str = Field(..., description="Display time in HH:MM format (JST)")
@@ -123,6 +128,7 @@ class NotificationMessage(BaseModel):
 
 class ExecutionLogRecord(BaseModel):
     """Structured execution log record model."""
+
     execution_id: str = Field(..., description="Unique execution identifier")
     level: ExecutionLogLevel = Field(..., description="Log level")
     event_type: str = Field(..., description="Event type (rate_fetch, line_push, etc)")

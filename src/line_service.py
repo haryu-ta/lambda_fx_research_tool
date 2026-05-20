@@ -12,6 +12,7 @@ from src.models import NotificationMessage, NotificationMessageType
 
 class LineServiceError(Exception):
     """Raised when LINE service operation fails."""
+
     pass
 
 

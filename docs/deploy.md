@@ -12,19 +12,72 @@ python3.13 -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
+## attenion
+
+### インフラ初期セットアップ (初回のみ)
+
+```
+# 1. 信頼ポリシー（Lambdaがこのロールを使えるようにする設定）を作成
+cat <<EOF > trust-policy.json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+
+# 2. ロールを作成
+aws iam create-role \
+  --role-name fx-rate-lambda-role \
+  --assume-role-policy-document file://trust-policy.json
+
+# 3. ログ出力用の管理ポリシーをアタッチ
+aws iam attach-role-policy \
+  --role-name fx-rate-lambda-role \
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+# ロールの ARN を取得（変数に格納）
+ROLE_ARN=$(aws iam get-role --role-name fx-rate-lambda-role --query 'Role.Arn' --output text)
+
+# Lambda 関数を作成
+aws lambda create-function \
+  --function-name fx-rate-line-notify \
+  --runtime python3.13 \
+  --architectures arm64 \
+  --handler src.lambda_function.lambda_handler \
+  --role $ROLE_ARN \
+  --zip-file fileb://package.zip
+
+```
+
+
 ## 3. デプロイパッケージ作成
 ```bash
 rm -rf build package.zip
 mkdir -p build
-python -m pip install -r requirements.txt -t build
-cp -R src/*.py build/
+python -m pip install \
+    --platform manylinux2014_aarch64 \
+    --target build \
+    --implementation cp \
+    --python-version 3.13 \
+    --only-binary=:all: \
+    -r requirements.txt
+cp -R src build/
 cd build && zip -r ../package.zip .
 ```
 
 ## 4. Lambda 更新
 ```bash
+cd ..
 aws lambda update-function-code \
-  --function-name <FUNCTION_NAME> \
+  --function-name fx-rate-line-notify \
   --zip-file fileb://package.zip
 ```
 

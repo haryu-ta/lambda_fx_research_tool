@@ -45,7 +45,7 @@ def mock_lambda_context():
         Mocked LambdaContext object
     """
     context = MagicMock()
-    context.request_id = "test-request-id-123"
+    context.aws_request_id = "test-request-id-123"
     context.function_name = "test-function"
     context.memory_limit_in_mb = 128
     context.invoked_function_arn = "arn:aws:lambda:us-east-1:123456789:function:test"

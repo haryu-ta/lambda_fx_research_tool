@@ -69,7 +69,7 @@ def log_execution_start(
         "Lambda execution started",
         extra={
             "execution_id": execution_id,
-            "request_id": context.request_id if context else "N/A",
+            "request_id": context.aws_request_id if context else "N/A",
             "function_name": context.function_name if context else "N/A",
             "event_type": "execution_start",
             "timestamp": _now_iso(),

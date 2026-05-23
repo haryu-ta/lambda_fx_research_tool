@@ -31,13 +31,6 @@ uvx --from git+https://github.com/github/spec-kit.git specify init lambda_fx_res
 /speckit.checklist
 ```
 
-## 実装計画を作成
-
-```
-# Copilot　Chatにて実行すること
-/speckit.checklist
-```
-
 ## 技術計画の作成
 
 ```

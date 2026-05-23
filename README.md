@@ -31,13 +31,6 @@ uvx --from git+https://github.com/github/spec-kit.git specify init lambda_fx_res
 /speckit.checklist
 ```
 
-## 実装計画を作成
-
-```
-# Copilot　Chatにて実行すること
-/speckit.checklist
-```
-
 ## 技術計画の作成
 
 ```
@@ -59,3 +52,17 @@ uvx --from git+https://github.com/github/spec-kit.git specify init lambda_fx_res
 - research.md
   - 技術調査・検証ログ
   - AIが設計を決めるにあたって、「本当にこの方法で実現可能か？」を裏付け調査した内容の記録です。
+
+## タスク生成
+
+```
+# Copilot　Chatにて実行すること
+/speckit.tasks
+```
+
+## 実装
+
+```
+# Copilot　Chatにて実行すること
+/speckit.implement
+```

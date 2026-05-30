@@ -14,7 +14,7 @@ EventBridgeとLineは既存の機能があるので反抗ない
 ## 3. 機能要件
 - 1ドルが何円か（例: 150.25円）を正確に取得すること。
 - LINEに通知するメッセージは以下のフォーマットとする。
-  「HH:MM時点  1ドル = XXX.XX 円」
+  「HH:MM時点\n１ドル = XXX.XX円」
   
 ## ４. 為替API仕様
 - USD/JPY の為替レートを取得する
@@ -23,7 +23,7 @@ EventBridgeとLineは既存の機能があるので反抗ない
 - Open Exchange Ratesを使用するように変更
 
 ## 5. 環境変数要件
-- `EXCHANGE_RATE_API_KEY` を Open Exchange Rates の `app_id` として利用する
+- `OPEN_EXCHANGE_RATES_APP_KEY` を Open Exchange Rates の `app_id` として利用する
 - `EXCHANGE_RATE_PROVIDER` は `open_exchange_rates` を使用する（既定値あり）
 - `LINE_CHANNEL_ACCESS_TOKEN` / `LINE_TO_USER_ID` は既存どおり必須
 

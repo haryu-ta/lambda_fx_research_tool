@@ -7,7 +7,7 @@
 ## Inbound API Contract (Open Exchange Rates)
 - Endpoint: `GET https://openexchangerates.org/api/latest.json`
 - Query parameters:
-  - `app_id`: `${EXCHANGE_RATE_API_KEY}`
+  - `app_id`: `${OPEN_EXCHANGE_RATES_APP_KEY}`
   - `base`: `USD`（プラン都合で固定される場合はレスポンス値優先で検証）
   - `symbols`: `JPY`
 - Success response (example):
@@ -37,3 +37,6 @@
 - EventBridge トリガー仕様は変更しない。
 - LINE Push Message ペイロードと成功文言フォーマットは変更しない。
 - スケジュール起動経路の自動再試行は無効のまま維持する。
+
+## Success Message Contract
+- Format (exact): `HH:MM時点\n１ドル = XXX.XX円`

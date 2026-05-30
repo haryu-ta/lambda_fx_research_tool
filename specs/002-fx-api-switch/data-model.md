@@ -32,7 +32,7 @@
   - `display_time_hhmm` (string, required)
   - `to_user_id` (string, required)
 - Validation rules:
-  - 成功時文言は `HH:MM時点  1ドル = XXX.XX 円` に一致。
+  - 成功時文言は `HH:MM時点\n１ドル = XXX.XX円` に一致。
   - 失敗時文言は既存契約3種のいずれか。
 
 ## Entity: ExecutionLogRecord

@@ -83,3 +83,24 @@ uvx --from git+https://github.com/github/spec-kit.git specify init lambda_fx_res
 - 為替取得先は Open Exchange Rates に切替
 - 通知文言フォーマットと失敗文言契約は既存仕様を維持
 - EventBridge の retry=0 と timezone=Asia/Tokyo は維持
+
+# 実装コマンド
+
+```
+set -a
+source .env
+set +a
+python - <<'PY'
+from types import SimpleNamespace
+from src.lambda_function import lambda_handler
+
+event = {}
+context = SimpleNamespace(
+    aws_request_id="local-test",
+    function_name="local-lambda",
+)
+
+result = lambda_handler(event, context)
+print(result)
+PY
+```

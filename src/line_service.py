@@ -91,7 +91,7 @@ class LineService:
         Raises:
             NotificationMessageError: If message format is invalid
         """
-        text = f"{timestamp_jst}時点  1ドル = {rate:.2f} 円"
+        text = f"{timestamp_jst}時点\n１ドル = {rate:.2f}円"
         return NotificationMessage(
             message_type=NotificationMessageType.SUCCESS,
             text=text,

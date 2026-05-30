@@ -10,7 +10,7 @@
 ## 2. Environment Variables
 Lambda に以下を設定する。
 
-- `EXCHANGE_RATE_API_KEY` (Open Exchange Rates の app_id)
+- `OPEN_EXCHANGE_RATES_APP_KEY` (Open Exchange Rates の app_id)
 - `LINE_CHANNEL_ACCESS_TOKEN`
 - `LINE_TO_USER_ID`
 - `LOG_LEVEL` (optional)
@@ -31,13 +31,13 @@ Lambda に以下を設定する。
 ```
 
 4. 最低確認ケース:
-- 正常系: 成功通知が `HH:MM時点  1ドル = XXX.XX 円` である
+- 正常系: 成功通知が `HH:MM時点\n１ドル = XXX.XX円` である
 - API障害: `為替API　実行NG` が送信される
 - データ不正: `為替情報取得できず` が送信される
 
 ## 5. Deployment Verification
 1. Lambda を更新して手動実行する。
-2. 成功時: LINE に `HH:MM時点  1ドル = XXX.XX 円` が届くこと。
+2. 成功時: LINE に `HH:MM時点\n１ドル = XXX.XX円` が届くこと。
 3. 失敗時: 既存3種のエラー通知文言が維持されること。
 4. CloudWatch で `rate_fetch` / `line_push` の INFO/ERROR を確認する。
 

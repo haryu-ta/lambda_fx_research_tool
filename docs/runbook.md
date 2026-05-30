@@ -6,7 +6,7 @@ aws lambda invoke --function-name <FUNCTION_NAME> out.json && cat out.json
 ```
 
 ## 2. 正常系チェック
-- LINE に `HH:MM時点  1ドル = XXX.XX 円` が届く
+- LINE に `HH:MM時点\n１ドル = XXX.XX円` が届く
 - CloudWatch に `rate_fetch` と `line_push` の INFO が出る
 - `rate_fetch` の `provider` が `open_exchange_rates` である
 
@@ -14,7 +14,7 @@ aws lambda invoke --function-name <FUNCTION_NAME> out.json && cat out.json
 ### FX API 障害
 - 通知文: `HH:MM時点  為替API　実行NG`
 - `rate_fetch` の ERROR を確認
-- Open Exchange Rates 側の app_id 設定 (`EXCHANGE_RATE_API_KEY`) を確認
+- Open Exchange Rates 側の app_id 設定 (`OPEN_EXCHANGE_RATES_APP_KEY`) を確認
 
 ### 為替データ不正
 - 通知文: `HH:MM時点  為替情報取得できず`

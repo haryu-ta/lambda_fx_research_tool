@@ -36,9 +36,7 @@ def test_lambda_exchange_rate_api_failure(
 ):
     """Test Lambda execution when exchange rate API fails."""
     mock_requests_get.return_value = MagicMock(status_code=401, json=lambda: {})
-    mock_requests_get.return_value.raise_for_status.side_effect = requests.HTTPError(
-        "Unauthorized"
-    )
+    mock_requests_get.return_value.raise_for_status.side_effect = requests.HTTPError("Unauthorized")
     mock_requests_post.return_value = MagicMock(status_code=200, json=lambda: {"message": "sent"})
 
     event = {}

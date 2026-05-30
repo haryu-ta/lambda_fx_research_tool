@@ -93,7 +93,9 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
                 }
 
         except ExchangeRateDataError as e:
-            log_validation_error(logger, execution_id, str(e), {"provider": config.exchange_rate_provider})
+            log_validation_error(
+                logger, execution_id, str(e), {"provider": config.exchange_rate_provider}
+            )
             try:
                 line_service = create_line_service(config)
                 error_msg = line_service.format_fx_data_unavailable_message(display_time)

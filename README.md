@@ -24,18 +24,19 @@ uvx --from git+https://github.com/github/spec-kit.git specify init lambda_fx_res
 /speckit.clarify パフォーマンス面を精緻化する
 ```
 
-## 要件の検証
-
-```
-# Copilot　Chatにて実行すること
-/speckit.checklist
-```
 
 ## 技術計画の作成
 
 ```
 # Copilot　Chatにて実行すること
 /speckit.plan --file ./docs/plan.md
+```
+
+## 要件の検証
+
+```
+# Copilot　Chatにて実行すること
+/speckit.checklist
 ```
 
 ### 作成物

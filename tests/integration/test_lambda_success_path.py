@@ -1,6 +1,7 @@
 """Integration test for Lambda success path."""
 
 from unittest.mock import MagicMock
+import requests
 
 from src.lambda_function import lambda_handler
 
@@ -34,8 +35,9 @@ def test_lambda_exchange_rate_api_failure(
     mock_env, mock_lambda_context, mock_requests_get, mock_requests_post
 ):
     """Test Lambda execution when exchange rate API fails."""
-    mock_requests_get.return_value = MagicMock(
-        status_code=200, json=lambda: {"result": "error", "error-type": "invalid-key"}
+    mock_requests_get.return_value = MagicMock(status_code=401, json=lambda: {})
+    mock_requests_get.return_value.raise_for_status.side_effect = requests.HTTPError(
+        "Unauthorized"
     )
     mock_requests_post.return_value = MagicMock(status_code=200, json=lambda: {"message": "sent"})
 
@@ -77,10 +79,9 @@ def test_lambda_invalid_rate_value(
     invalid_response = MagicMock(
         status_code=200,
         json=lambda: {
-            "result": "success",
-            "base_code": "USD",
-            "conversion_rates": {"JPY": 0},  # Invalid: zero rate
-            "time_last_update_utc": "2026-05-17T12:00:00Z",
+            "timestamp": 1717065600,
+            "base": "USD",
+            "rates": {"JPY": 0},  # Invalid: zero rate
         },
     )
     mock_requests_get.return_value = invalid_response

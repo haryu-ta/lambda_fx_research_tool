@@ -14,7 +14,7 @@ def test_format_success_message():
     message = service.format_success_message(150.25, "09:00")
 
     assert message.message_type == NotificationMessageType.SUCCESS
-    assert message.text == "09:00時点\n        1ドル = 150.25 円"
+    assert message.text == "09:00時点  1ドル = 150.25 円"
     assert message.display_time_hhmm == "09:00"
 
 

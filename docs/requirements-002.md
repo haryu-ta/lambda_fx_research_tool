@@ -22,3 +22,8 @@ EventBridgeとLineは既存の機能があるので反抗ない
 - JSON形式でレスポンスを返すAPIを採用する
 - Open Exchange Ratesを使用するように変更
 
+## 5. 環境変数要件
+- `EXCHANGE_RATE_API_KEY` を Open Exchange Rates の `app_id` として利用する
+- `EXCHANGE_RATE_PROVIDER` は `open_exchange_rates` を使用する（既定値あり）
+- `LINE_CHANNEL_ACCESS_TOKEN` / `LINE_TO_USER_ID` は既存どおり必須
+

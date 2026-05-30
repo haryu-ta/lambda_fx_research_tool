@@ -18,6 +18,7 @@ def mock_env(monkeypatch):
     """
     env_vars = {
         "EXCHANGE_RATE_API_KEY": "test-api-key-12345",
+        "EXCHANGE_RATE_PROVIDER": "open_exchange_rates",
         "LINE_CHANNEL_ACCESS_TOKEN": "test-channel-token-xyz",
         "LINE_TO_USER_ID": "test-user-id-abc",
         "LOG_LEVEL": "INFO",
@@ -55,16 +56,15 @@ def mock_lambda_context():
 
 @pytest.fixture
 def mock_exchange_rate_response():
-    """Create a mock ExchangeRate-API response.
+    """Create a mock Open Exchange Rates response.
 
     Returns:
         Dictionary representing valid API response
     """
     return {
-        "result": "success",
-        "base_code": "USD",
-        "time_last_update_utc": "2026-05-17T12:00:00Z",
-        "conversion_rates": {
+        "timestamp": 1717065600,
+        "base": "USD",
+        "rates": {
             "JPY": 150.25,
         },
     }
@@ -72,14 +72,15 @@ def mock_exchange_rate_response():
 
 @pytest.fixture
 def mock_exchange_rate_error_response():
-    """Create a mock ExchangeRate-API error response.
+    """Create a mock Open Exchange Rates error payload.
 
     Returns:
         Dictionary representing error API response
     """
     return {
-        "result": "error",
-        "error-type": "invalid-key",
+        "error": True,
+        "status": 401,
+        "message": "invalid_app_id",
     }
 
 
@@ -121,5 +122,9 @@ def mock_requests_get(mocker):
     """
     mock = mocker.patch("requests.get")
     mock.return_value.status_code = 200
-    mock.return_value.json.return_value = {"result": "success"}
+    mock.return_value.json.return_value = {
+        "timestamp": 1717065600,
+        "base": "USD",
+        "rates": {"JPY": 150.25},
+    }
     return mock

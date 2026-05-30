@@ -24,9 +24,9 @@ description: "Implementation task list for FX API switch to Open Exchange Rates"
 
 **Purpose**: API切替の作業前提を整える
 
-- [ ] T001 Open Exchange Rates 用の環境変数説明を更新 in docs/requirements-002.md
-- [ ] T002 API切替方針と手順をREADMEに追記 in README.md
-- [ ] T003 [P] 既存デプロイ手順に新API前提を反映 in docs/deploy.md
+- [X] T001 Open Exchange Rates 用の環境変数説明を更新 in docs/requirements-002.md
+- [X] T002 API切替方針と手順をREADMEに追記 in README.md
+- [X] T003 [P] 既存デプロイ手順に新API前提を反映 in docs/deploy.md
 
 ---
 
@@ -36,10 +36,10 @@ description: "Implementation task list for FX API switch to Open Exchange Rates"
 
 ⚠️ **CRITICAL**: User story 実装前に完了必須
 
-- [ ] T004 Open Exchange Rates 用設定検証を追加 in src/config.py
-- [ ] T005 [P] OpenExchangeRateResponse モデルを追加 in src/models.py
-- [ ] T006 [P] プロバイダ種別と変換ログ項目を追加 in src/logger.py
-- [ ] T007 共通モック/fixtureを新API仕様に更新 in tests/conftest.py
+- [X] T004 Open Exchange Rates 用設定検証を追加 in src/config.py
+- [X] T005 [P] OpenExchangeRateResponse モデルを追加 in src/models.py
+- [X] T006 [P] プロバイダ種別と変換ログ項目を追加 in src/logger.py
+- [X] T007 共通モック/fixtureを新API仕様に更新 in tests/conftest.py
 
 **Checkpoint**: Foundation ready - user story implementation can begin
 
@@ -53,22 +53,22 @@ description: "Implementation task list for FX API switch to Open Exchange Rates"
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Open Exchange Rates 正常レスポンスの単体テストを追加 in tests/unit/test_exchange_service.py
-- [ ] T009 [P] [US1] レート丸めと成功文言の単体テストを更新 in tests/unit/test_line_service.py
-- [ ] T010 [P] [US1] APIエラー/タイムアウト時の単体テストを追加 in tests/unit/test_exchange_service.py
-- [ ] T011 [P] [US1] データ欠損・非数値時の単体テストを追加 in tests/unit/test_exchange_service.py
-- [ ] T012 [US1] 成功経路の統合テストを新API仕様へ更新 in tests/integration/test_lambda_success_path.py
-- [ ] T013 [P] [US1] API失敗経路の統合テストを新API仕様へ更新 in tests/integration/test_lambda_fx_api_failure.py
-- [ ] T014 [P] [US1] データ不正経路の統合テストを新API仕様へ更新 in tests/integration/test_lambda_fx_data_invalid.py
+- [X] T008 [P] [US1] Open Exchange Rates 正常レスポンスの単体テストを追加 in tests/unit/test_exchange_service.py
+- [X] T009 [P] [US1] レート丸めと成功文言の単体テストを更新 in tests/unit/test_line_service.py
+- [X] T010 [P] [US1] APIエラー/タイムアウト時の単体テストを追加 in tests/unit/test_exchange_service.py
+- [X] T011 [P] [US1] データ欠損・非数値時の単体テストを追加 in tests/unit/test_exchange_service.py
+- [X] T012 [US1] 成功経路の統合テストを新API仕様へ更新 in tests/integration/test_lambda_success_path.py
+- [X] T013 [P] [US1] API失敗経路の統合テストを新API仕様へ更新 in tests/integration/test_lambda_fx_api_failure.py
+- [X] T014 [P] [US1] データ不正経路の統合テストを新API仕様へ更新 in tests/integration/test_lambda_fx_data_invalid.py
 
 ### Implementation for User Story 1
 
-- [ ] T015 [US1] Open Exchange Rates クライアント呼び出しを実装 in src/exchange_service.py
-- [ ] T016 [US1] `rates.JPY` から ExchangeRateSnapshot への正規化処理を実装 in src/exchange_service.py
-- [ ] T017 [US1] APIエラー/スロットリングの例外マッピングを実装 in src/exchange_service.py
-- [ ] T018 [US1] 欠損・型不正の検証エラー処理を実装 in src/exchange_service.py
-- [ ] T019 [US1] Lambdaの成功/失敗分岐連携を更新 in src/lambda_function.py
-- [ ] T020 [US1] Quickstart の検証手順を更新 in specs/002-fx-api-switch/quickstart.md
+- [X] T015 [US1] Open Exchange Rates クライアント呼び出しを実装 in src/exchange_service.py
+- [X] T016 [US1] `rates.JPY` から ExchangeRateSnapshot への正規化処理を実装 in src/exchange_service.py
+- [X] T017 [US1] APIエラー/スロットリングの例外マッピングを実装 in src/exchange_service.py
+- [X] T018 [US1] 欠損・型不正の検証エラー処理を実装 in src/exchange_service.py
+- [X] T019 [US1] Lambdaの成功/失敗分岐連携を更新 in src/lambda_function.py
+- [X] T020 [US1] Quickstart の検証手順を更新 in specs/002-fx-api-switch/quickstart.md
 
 **Checkpoint**: User Story 1 is independently functional and testable
 
@@ -78,12 +78,12 @@ description: "Implementation task list for FX API switch to Open Exchange Rates"
 
 **Purpose**: 横断品質の最終仕上げ
 
-- [ ] T021 [P] API切替の仕様整合レビューを反映 in specs/002-fx-api-switch/spec.md
-- [ ] T022 [P] 計画・調査・クイックスタートの用語統一 in specs/002-fx-api-switch/plan.md
-- [ ] T023 [P] 運用監視クエリを API切替観点で更新 in docs/cloudwatch-queries.md
-- [ ] T024 [P] 障害時切り分けフローと設定確認項目を更新 in docs/runbook.md
-- [ ] T025 フルテスト実行と結果記録 in specs/002-fx-api-switch/quickstart.md
-- [ ] T026 変更セットをコミットしタグ候補を記録 in specs/002-fx-api-switch/tasks.md
+- [X] T021 [P] API切替の仕様整合レビューを反映 in specs/002-fx-api-switch/spec.md
+- [X] T022 [P] 計画・調査・クイックスタートの用語統一 in specs/002-fx-api-switch/plan.md
+- [X] T023 [P] 運用監視クエリを API切替観点で更新 in docs/cloudwatch-queries.md
+- [X] T024 [P] 障害時切り分けフローと設定確認項目を更新 in docs/runbook.md
+- [X] T025 フルテスト実行と結果記録 in specs/002-fx-api-switch/quickstart.md
+- [X] T026 変更セットをコミットしタグ候補を記録 in specs/002-fx-api-switch/tasks.md
 
 ---
 
@@ -154,3 +154,5 @@ Task T015/T016/T017/T018 が完了後に T019 を実施
 - [P] はファイル競合が起きにくいものに限定
 - User story tasks は全て [US1] を付与
 - 実装時は既存通知文言契約を変更しないこと
+
+Tag candidate: `v1.1.0-fx-api-switch`

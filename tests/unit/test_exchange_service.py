@@ -23,22 +23,25 @@ def test_fetch_rate_success(mock_requests_get, mock_exchange_rate_response):
 
 def test_fetch_rate_api_error(mock_requests_get, mock_exchange_rate_error_response):
     """Test exchange rate fetch with API error."""
-    mock_requests_get.return_value.json.return_value = mock_exchange_rate_error_response
+    mock_requests_get.return_value.status_code = 401
+    http_error = requests.HTTPError("Unauthorized")
+    http_error.response = mock_requests_get.return_value
+    mock_requests_get.return_value.raise_for_status.side_effect = http_error
 
     service = ExchangeRateService(api_key="test-key")
 
     with pytest.raises(ExchangeRateError) as exc_info:
         service.fetch_rate()
 
-    assert "API error" in str(exc_info.value)
+    assert "status=401" in str(exc_info.value)
 
 
 def test_fetch_rate_missing_jpy(mock_requests_get):
     """Test exchange rate fetch with missing JPY rate."""
     mock_requests_get.return_value.json.return_value = {
-        "result": "success",
-        "base_code": "USD",
-        "conversion_rates": {
+        "timestamp": 1717065600,
+        "base": "USD",
+        "rates": {
             "EUR": 0.92,
             "GBP": 0.79,
         },
@@ -49,7 +52,7 @@ def test_fetch_rate_missing_jpy(mock_requests_get):
     with pytest.raises(ExchangeRateError) as exc_info:
         service.fetch_rate()
 
-    assert "JPY rate not found" in str(exc_info.value)
+    assert "rates.JPY" in str(exc_info.value)
 
 
 def test_fetch_rate_timeout(mock_requests_get):
@@ -79,11 +82,41 @@ def test_fetch_rate_connection_error(mock_requests_get):
 def test_fetch_rate_http_error(mock_requests_get):
     """Test exchange rate fetch with HTTP error."""
     mock_requests_get.return_value.status_code = 401
-    mock_requests_get.return_value.raise_for_status.side_effect = requests.HTTPError("Unauthorized")
+    http_error = requests.HTTPError("Unauthorized")
+    http_error.response = mock_requests_get.return_value
+    mock_requests_get.return_value.raise_for_status.side_effect = http_error
 
     service = ExchangeRateService(api_key="invalid-key")
 
     with pytest.raises(ExchangeRateError) as exc_info:
         service.fetch_rate()
 
-    assert "request failed" in str(exc_info.value).lower()
+    assert "status=401" in str(exc_info.value).lower()
+
+
+def test_fetch_rate_throttling(mock_requests_get):
+    """Test exchange rate fetch with throttling response."""
+    mock_requests_get.return_value.status_code = 429
+
+    service = ExchangeRateService(api_key="test-key")
+
+    with pytest.raises(ExchangeRateError) as exc_info:
+        service.fetch_rate()
+
+    assert "throttling" in str(exc_info.value).lower()
+
+
+def test_fetch_rate_non_numeric_jpy(mock_requests_get):
+    """Test exchange rate fetch with non-numeric JPY value."""
+    mock_requests_get.return_value.json.return_value = {
+        "timestamp": 1717065600,
+        "base": "USD",
+        "rates": {"JPY": "not-a-number"},
+    }
+
+    service = ExchangeRateService(api_key="test-key")
+
+    with pytest.raises(ExchangeRateError) as exc_info:
+        service.fetch_rate()
+
+    assert "must be numeric" in str(exc_info.value)

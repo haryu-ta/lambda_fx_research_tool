@@ -30,6 +30,11 @@ Lambda に以下を設定する。
 .venv/bin/pytest -q
 ```
 
+4. 最低確認ケース:
+- 正常系: 成功通知が `HH:MM時点  1ドル = XXX.XX 円` である
+- API障害: `為替API　実行NG` が送信される
+- データ不正: `為替情報取得できず` が送信される
+
 ## 5. Deployment Verification
 1. Lambda を更新して手動実行する。
 2. 成功時: LINE に `HH:MM時点  1ドル = XXX.XX 円` が届くこと。
@@ -40,3 +45,9 @@ Lambda に以下を設定する。
 - EventBridge timezone が `Asia/Tokyo`
 - Retry policy が `MaximumRetryAttempts=0`
 - 直近実行ログに `execution_id` が出力される
+- `rate_fetch` ログの `provider` が `open_exchange_rates` である
+
+## 7. Latest Validation Result
+- Date: 2026-05-30
+- Command: `.venv/bin/pytest -q`
+- Result: `36 passed`

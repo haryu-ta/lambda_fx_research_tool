@@ -1,13 +1,10 @@
-"""Exchange rate fetching service using ExchangeRate-API."""
-
-from datetime import datetime
-from typing import Optional
+"""Exchange rate fetching service using Open Exchange Rates."""
 
 import requests
 from pydantic import ValidationError
 
 from src.config import Config
-from src.models import ExchangeRateSnapshot
+from src.models import ExchangeRateSnapshot, OpenExchangeRateResponse
 
 
 class ExchangeRateError(Exception):
@@ -31,16 +28,18 @@ class ExchangeRateDataError(ExchangeRateError):
 class ExchangeRateService:
     """Service for fetching USD/JPY exchange rates."""
 
-    BASE_URL = "https://v6.exchangerate-api.com/v6"
+    BASE_URL = "https://openexchangerates.org/api/latest.json"
     DEFAULT_TIMEOUT = 10  # seconds
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, base_url: str = BASE_URL):
         """Initialize the service with API key.
 
         Args:
-            api_key: ExchangeRate-API key
+            api_key: Open Exchange Rates app_id
+            base_url: API endpoint URL
         """
         self.api_key = api_key
+        self.base_url = base_url
 
     def fetch_rate(self) -> ExchangeRateSnapshot:
         """Fetch the latest USD/JPY exchange rate.
@@ -52,51 +51,55 @@ class ExchangeRateService:
             ExchangeRateError: If fetch fails or response is invalid
         """
         try:
-            # Call ExchangeRate-API
-            url = f"{self.BASE_URL}/{self.api_key}/latest/USD"
-            response = requests.get(url, timeout=self.DEFAULT_TIMEOUT)
+            response = requests.get(
+                self.base_url,
+                params={"app_id": self.api_key, "base": "USD", "symbols": "JPY"},
+                timeout=self.DEFAULT_TIMEOUT,
+            )
+
+            if response.status_code == 429:
+                raise ExchangeRateApiError("API throttling detected")
+
             response.raise_for_status()
 
             data = response.json()
 
-            # Validate response structure
-            if data.get("result") != "success":
-                error_type = data.get("error-type", "unknown")
-                raise ExchangeRateApiError(f"API error: {error_type}")
-
-            # Extract JPY rate
-            rates = data.get("conversion_rates", {})
-            jpy_rate = rates.get("JPY")
-
-            if jpy_rate is None:
-                raise ExchangeRateDataError("JPY rate not found in API response")
+            provider_response = OpenExchangeRateResponse(**data)
+            jpy_rate = provider_response.rates["JPY"]
 
             # Create and validate snapshot
             snapshot = ExchangeRateSnapshot(
-                base_currency=data.get("base_code", "USD"),
+                base_currency=provider_response.base,
                 target_currency="JPY",
                 rate=float(jpy_rate),
-                provider_timestamp=data.get("time_last_update_utc"),
+                provider_timestamp=str(provider_response.timestamp),
                 provider_status_code=response.status_code,
             )
 
             return snapshot
 
+        except ExchangeRateApiError:
+            raise
+
         except requests.RequestException as e:
-            # Handle HTTP errors, timeouts, etc.
+            response = getattr(e, "response", None)
+            status_code = getattr(response, "status_code", None)
+
+            if status_code == 429:
+                raise ExchangeRateApiError("API throttling detected")
+
             if isinstance(e, requests.Timeout):
                 raise ExchangeRateApiError(f"API request timeout: {str(e)}")
             elif isinstance(e, requests.ConnectionError):
                 raise ExchangeRateApiError(f"API connection error: {str(e)}")
             else:
-                raise ExchangeRateApiError(f"API request failed: {str(e)}")
+                suffix = f" (status={status_code})" if status_code else ""
+                raise ExchangeRateApiError(f"API request failed{suffix}: {str(e)}")
 
         except (ValueError, KeyError) as e:
-            # Handle JSON parsing errors
             raise ExchangeRateDataError(f"Invalid API response format: {str(e)}")
 
         except ValidationError as e:
-            # Handle Pydantic validation errors
             raise ExchangeRateDataError(f"Invalid exchange rate data: {str(e)}")
 
 
@@ -109,4 +112,7 @@ def create_exchange_service(config: Config) -> ExchangeRateService:
     Returns:
         ExchangeRateService instance
     """
-    return ExchangeRateService(api_key=config.exchange_rate_api_key)
+    return ExchangeRateService(
+        api_key=config.exchange_rate_api_key,
+        base_url=config.exchange_rate_base_url,
+    )

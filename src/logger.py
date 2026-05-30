@@ -83,6 +83,8 @@ def log_rate_fetch_success(
     execution_id: str,
     rate: float,
     timestamp: str,
+    provider: str = "open_exchange_rates",
+    mapping_details: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Log successful exchange rate fetch.
 
@@ -98,8 +100,12 @@ def log_rate_fetch_success(
             "execution_id": execution_id,
             "rate": rate,
             "timestamp": timestamp,
+            "provider": provider,
             "event_type": "rate_fetch",
-            "details": {"result": "success"},
+            "details": {
+                "result": "success",
+                "mapping": mapping_details or {"source": "rates.JPY", "target": "rate"},
+            },
         },
     )
 
@@ -108,6 +114,7 @@ def log_rate_fetch_failure(
     logger: Logger,
     execution_id: str,
     error_reason: str,
+    provider: str = "open_exchange_rates",
     error_details: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Log exchange rate fetch failure.
@@ -124,6 +131,7 @@ def log_rate_fetch_failure(
             "execution_id": execution_id,
             "reason": error_reason,
             "timestamp": _now_iso(),
+            "provider": provider,
             "event_type": "rate_fetch",
             "details": error_details or {},
         },

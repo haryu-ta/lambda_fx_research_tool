@@ -11,10 +11,9 @@ def test_lambda_fx_data_invalid_sends_unavailable_message(
     mock_requests_get.return_value = MagicMock(
         status_code=200,
         json=lambda: {
-            "result": "success",
-            "base_code": "USD",
-            "conversion_rates": {"JPY": 0},
-            "time_last_update_utc": "2026-05-17T12:00:00Z",
+            "timestamp": 1717065600,
+            "base": "USD",
+            "rates": {"JPY": 0},
         },
     )
     mock_requests_post.return_value = MagicMock(status_code=200, json=lambda: {"message": "sent"})

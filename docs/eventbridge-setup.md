@@ -46,3 +46,13 @@ aws scheduler create-schedule \
 ## 重要設定
 - `RetryPolicy.MaximumRetryAttempts=0`
 - 失敗時の重複通知回避のため、再試行は有効化しない
+
+## 設定確認コマンド
+```bash
+aws scheduler get-schedule --name fx-rate-line-notify-hourly-daytime \
+  --query '{Timezone:ScheduleExpressionTimezone,Retry:Target.RetryPolicy.MaximumRetryAttempts}'
+```
+
+期待値:
+- `Timezone` が `Asia/Tokyo`
+- `Retry` が `0`

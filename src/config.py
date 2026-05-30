@@ -15,7 +15,14 @@ class Config:
 
     def __init__(self):
         """Initialize configuration and validate all required variables."""
-        self.exchange_rate_api_key = self._get_required_env("EXCHANGE_RATE_API_KEY")
+        self.exchange_rate_api_key = self._get_required_exchange_rate_key()
+        self.exchange_rate_provider = self.validate_exchange_rate_provider(
+            self._get_optional_env("EXCHANGE_RATE_PROVIDER", "open_exchange_rates")
+        )
+        self.exchange_rate_base_url = self._get_optional_env(
+            "OPEN_EXCHANGE_RATES_BASE_URL",
+            "https://openexchangerates.org/api/latest.json",
+        )
         self.line_channel_access_token = self._get_required_env("LINE_CHANNEL_ACCESS_TOKEN")
         self.line_to_user_id = self._get_required_env("LINE_TO_USER_ID")
         self.log_level = os.getenv("LOG_LEVEL", "INFO")
@@ -54,6 +61,30 @@ class Config:
         """
         return os.getenv(name, default)
 
+    @classmethod
+    def _get_required_exchange_rate_key(cls) -> str:
+        """Get exchange rate key from new or legacy env var name.
+
+        Returns:
+            Exchange rate API key
+
+        Raises:
+            ConfigError: If neither env var is set
+        """
+        value = os.getenv("OPEN_EXCHANGE_RATES_APP_KEY")
+        if value and value.strip():
+            return value
+
+        legacy_value = os.getenv("EXCHANGE_RATE_API_KEY")
+        if legacy_value and legacy_value.strip():
+            return legacy_value
+
+        raise ConfigError(
+            "Required environment variable 'OPEN_EXCHANGE_RATES_APP_KEY' "
+            "(or legacy 'EXCHANGE_RATE_API_KEY') is not set or is empty. "
+            "Please set it in your environment or .env file."
+        )
+
     @staticmethod
     def validate_schedule_timezone(timezone_name: str) -> str:
         """Validate schedule timezone.
@@ -70,6 +101,24 @@ class Config:
         if timezone_name != "Asia/Tokyo":
             raise ConfigError("Schedule timezone must be 'Asia/Tokyo'.")
         return timezone_name
+
+    @staticmethod
+    def validate_exchange_rate_provider(provider_name: Optional[str]) -> str:
+        """Validate exchange rate provider.
+
+        Args:
+            provider_name: Provider name to validate
+
+        Returns:
+            Normalized provider name
+
+        Raises:
+            ConfigError: If provider is unsupported
+        """
+        normalized = (provider_name or "").strip().lower()
+        if normalized != "open_exchange_rates":
+            raise ConfigError("EXCHANGE_RATE_PROVIDER must be 'open_exchange_rates'.")
+        return normalized
 
 
 # Singleton instance

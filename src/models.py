@@ -92,6 +92,39 @@ class ExchangeRateSnapshot(BaseModel):
         return v
 
 
+class OpenExchangeRateResponse(BaseModel):
+    """Open Exchange Rates API response model."""
+
+    disclaimer: Optional[str] = Field(None, description="Provider disclaimer text")
+    license: Optional[str] = Field(None, description="Provider license text")
+    timestamp: int = Field(..., description="Provider Unix timestamp")
+    base: str = Field(..., description="Base currency code")
+    rates: dict = Field(..., description="Currency rate map")
+
+    @validator("base")
+    def validate_base_currency(cls, v: str) -> str:
+        """Validate that base currency is USD."""
+        if v != "USD":
+            raise ValueError("Base currency must be USD")
+        return v
+
+    @validator("rates")
+    def validate_rates_has_jpy(cls, v: dict) -> dict:
+        """Validate JPY exists and is numeric."""
+        if "JPY" not in v:
+            raise ValueError("rates.JPY is required")
+
+        try:
+            rate = float(v["JPY"])
+        except (TypeError, ValueError):
+            raise ValueError("rates.JPY must be numeric")
+
+        if rate <= 0:
+            raise ValueError("rates.JPY must be positive")
+
+        return v
+
+
 class NotificationMessage(BaseModel):
     """LINE notification message model."""
 

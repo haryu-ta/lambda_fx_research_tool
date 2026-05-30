@@ -93,7 +93,9 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
                 }
 
         except ExchangeRateDataError as e:
-            log_validation_error(logger, execution_id, str(e))
+            log_validation_error(
+                logger, execution_id, str(e), {"provider": config.exchange_rate_provider}
+            )
             try:
                 line_service = create_line_service(config)
                 error_msg = line_service.format_fx_data_unavailable_message(display_time)
@@ -107,7 +109,12 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
             }
 
         except ExchangeRateApiError as e:
-            log_rate_fetch_failure(logger, execution_id, str(e))
+            log_rate_fetch_failure(
+                logger,
+                execution_id,
+                str(e),
+                provider=config.exchange_rate_provider,
+            )
             # Send error notification: FX API error
             try:
                 line_service = create_line_service(config)
@@ -122,7 +129,12 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
             }
 
         except ExchangeRateError as e:
-            log_rate_fetch_failure(logger, execution_id, str(e))
+            log_rate_fetch_failure(
+                logger,
+                execution_id,
+                str(e),
+                provider=config.exchange_rate_provider,
+            )
             return {
                 "statusCode": 500,
                 "body": f"Exchange rate fetch failed: {str(e)}",
@@ -133,6 +145,8 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
             execution_id,
             rate_snapshot.rate,
             rate_snapshot.provider_timestamp or "N/A",
+            provider=config.exchange_rate_provider,
+            mapping_details={"source": "rates.JPY", "target": "ExchangeRateSnapshot.rate"},
         )
 
         # 3. Format and send success notification

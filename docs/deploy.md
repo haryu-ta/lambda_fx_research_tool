@@ -82,7 +82,8 @@ aws lambda update-function-code \
 ```
 
 ## 5. 環境変数設定
-- `EXCHANGE_RATE_API_KEY`
+- `EXCHANGE_RATE_API_KEY` (Open Exchange Rates の app_id)
+- `EXCHANGE_RATE_PROVIDER` (`open_exchange_rates` を指定。未指定時も既定値で同等)
 - `LINE_CHANNEL_ACCESS_TOKEN`
 - `LINE_TO_USER_ID`
 - `LOG_LEVEL` (任意)
@@ -90,7 +91,7 @@ aws lambda update-function-code \
 ```bash
 aws lambda update-function-configuration \
   --function-name <FUNCTION_NAME> \
-  --environment 'Variables={EXCHANGE_RATE_API_KEY=xxx,LINE_CHANNEL_ACCESS_TOKEN=yyy,LINE_TO_USER_ID=zzz,LOG_LEVEL=INFO}'
+  --environment 'Variables={EXCHANGE_RATE_API_KEY=xxx,EXCHANGE_RATE_PROVIDER=open_exchange_rates,LINE_CHANNEL_ACCESS_TOKEN=yyy,LINE_TO_USER_ID=zzz,LOG_LEVEL=INFO}'
 ```
 
 ## 6. EventBridge 設定
